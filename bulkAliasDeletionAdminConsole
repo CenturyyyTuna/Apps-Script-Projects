@@ -1,0 +1,39 @@
+/**
+ * Lists all the users in a domain sorted by first name.
+ * @see https://developers.google.com/admin-sdk/directory/reference/rest/v1/users/list
+ * toBeDeleted variable on line 25 x.address.match takes regex format of the secondary domain. 
+ * see also: https://cheatography.com/davechild/cheat-sheets/regular-expressions/ for regex guide.
+ * CAUTION: Large requests (e.g estimate 300+ users) consumes quota. 
+ */
+
+function bulkDeletionEmailAlias() {
+  let pageToken;
+  let page;
+  do {
+    page = AdminDirectory.Users.list({
+      domain: '<ENTER DOMAIN HERE>', //change this to your primary domain
+      orderBy: 'email',
+      maxResults: 100,
+      pageToken: pageToken,
+      projection: 'FULL'
+    });
+    const users = page.users;
+    console.log(users);
+    if (!users) {
+      Logger.log('No users found.');
+      return;
+    }
+    for (const user of users) {
+      // x.address.match parameter should contain regex value of secondary domain
+    var toBeDeleted = user.emails.map(x => x.address.match(/.*@sales\.domain\.com$/)).flat().filter(x => x)[0]; // match regex value escaping every "." with escape sequence "\" 
+    // proceed with iteration even if value is null (or there are no email aliases for other users)
+    console.log(toBeDeleted);
+    if(!toBeDeleted)
+    continue;
+    // delete user aliases defined on x.address.match
+    AdminDirectory.Users.Aliases.remove(user.primaryEmail , toBeDeleted)
+    Logger.log(String(toBeDeleted));
+    }
+    pageToken = page.nextPageToken;
+  } while (pageToken);
+}
