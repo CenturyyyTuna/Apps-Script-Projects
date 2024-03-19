@@ -1,0 +1,37 @@
+/**
+ * singleFileDeletion deletes a single file defined with FileID.
+ * removeTrashed lists all file ID's that are trashed, and permanently removes them per iteration.
+ * Make sure to select the function on the dropdown next to Debug. 
+ * @see https://developers.google.com/drive/api/v2/reference/files/delete
+ * CAUTION: Large requests consumes quota.
+ */
+
+function singleFileDeletion() {
+
+  var file = '<Enter File ID here>';
+  var drive = DriveApp.getFileById(file);
+  //drive.setTrashed(true);
+  var stat = drive.isTrashed();
+  Drive.Files.remove(file);
+  Logger.log(stat);
+}
+
+function removeTrashed() {
+
+  var trashedFiles = DriveApp.searchFiles('trashed=true');
+  var files = [];
+  //Get file ID's from trash and push to array.
+  while (trashedFiles.hasNext()) {
+    var file = trashedFiles.next();
+    files.push([file.getId()]);
+  }
+  //Deletes the files 
+  var newFiles = files.flat(); 
+  for (var i = 0; i < files.length; i++) {
+   Drive.Files.remove(newFiles[i]);
+  }
+  Logger.log("Removed the following file ID's: " + newFiles);
+
+}
+
+
