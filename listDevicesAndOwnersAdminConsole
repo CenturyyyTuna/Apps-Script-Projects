@@ -1,0 +1,27 @@
+/**
+ * documentation: https://developers.google.com/admin-sdk/directory/reference/rest/v1/mobiledevices/list
+ * customerID parameter is needed, you can get this by using users.get method 
+ * documentation: https://developers.google.com/admin-sdk/directory/reference/rest/v1/users/get
+ *  
+ */
+
+function listDeviceOwners() {
+  let devices;
+  let pageToken;
+  do {
+  devices = AdminDirectory.Mobiledevices.list(customerId='CUSTOMERID');
+  const email = devices.mobiledevices;
+  var len = email.length; 
+  var arr = []; 
+    //creates a new array filled with the necessary data
+    for (i = 0; i < len; i++){
+      console.log(email[i].model, email[i].name, email[i].email[0], email[i].serialNumber);
+      arr.push([email[i].model, email[i].name, email[i].email[0], email[i].serialNumber]);
+    }
+    //sets all array values on the spreadsheet
+    pageToken = devices.nextPageToken;
+  } while (pageToken)
+  
+  //displays the data needed
+  console.log(arr);
+}
