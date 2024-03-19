@@ -1,0 +1,17 @@
+function emailInvoice() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet();
+  var email = sheet.getActiveSheet().getRange("the cell where the email address is added").getValue()
+  var cusname = sheet.getActiveSheet().getRange("the cell of the user name").getValue()
+  var sheetID = sheet.getId();
+  var pdfUrl = `https://docs.google.com/spreadsheets/d/${sheetID}/export?format=pdf&gid=${sheet.getActiveSheet().getSheetId()}`
+  const params = { method: "GET", headers: { "authorization": "Bearer " + ScriptApp.getOAuthToken() } };
+  var pdfBlob = UrlFetchApp.fetch(pdfUrl, params).getBlob().setName('Invoice.pdf');
+
+  var message = { 
+    to: email, 
+    subject: "Invoice from *******", 
+    body: "Dear " + cusname + ", Please find attached Invoice. Any queries to: ", 
+    attachments: pdfBlob
+  };
+  MailApp.sendEmail(message);
+}
